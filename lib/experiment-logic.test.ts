@@ -45,6 +45,8 @@ describe("Ohm's Law and experiment state", () => {
     const raw = JSON.stringify([{ voltage: 6, resistance: 100, current: 0.06 }, { voltage: 'bad' }, null])
     expect(readStoredTrials(raw, isCircuitTrial)).toHaveLength(1)
     expect(readStoredTrials('{broken', isCircuitTrial)).toEqual([])
+    expect(readStoredTrials(null, isCircuitTrial)).toEqual([])
+    expect(readStoredTrials(JSON.stringify({ voltage: 6 }), isCircuitTrial)).toEqual([])
     expect(readStoredTrials(JSON.stringify([{ length: 0.6, time: 7.7, oscillations: 10, period: 0.77, g: 9.8 }]), isPendulumTrial)).toHaveLength(1)
   })
 })
