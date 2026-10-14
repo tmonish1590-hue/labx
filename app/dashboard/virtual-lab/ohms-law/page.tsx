@@ -41,7 +41,15 @@ const answers = ['Ammeter', 'ohm (Ω)', 'The same current must pass through it',
 
 export default function OhmsLawPage() {
   const [voltage, setVoltage] = useState(DEFAULT_VOLTAGE); const [resistance, setResistance] = useState(DEFAULT_RESISTANCE); const [circuit, setCircuit] = useState(DEFAULT_CIRCUIT); const [started, setStarted] = useState(false); const [trials, setTrials] = useState<Trial[]>([]); const [message, setMessage] = useState(''); const [selected, setSelected] = useState<Record<number, string>>({})
-  useEffect(() => { const saved = window.localStorage.getItem('labx-ohms-trials'); if (saved) setTrials(JSON.parse(saved)) }, [])
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem('labx-ohms-trials')
+      if (saved) {
+        const parsed: unknown = JSON.parse(saved)
+        if (Array.isArray(parsed)) setTrials(parsed.filter((trial): trial is Trial => typeof trial === 'object' && trial !== null && typeof (trial as Trial).voltage === 'number' && typeof (trial as Trial).resistance === 'number' && typeof (trial as Trial).current === 'number'))
+      }
+    } catch { setTrials([]) }
+  }, [])
   useEffect(() => { window.localStorage.setItem('labx-ohms-trials', JSON.stringify(trials)) }, [trials])
   const current = useMemo(() => calculateCurrent(voltage, resistance, circuit), [voltage, resistance, circuit])
   function toggle(key: keyof CircuitState) { setCircuit((v) => ({ ...v, [key]: !v[key] })); setStarted(false); setMessage('') }

@@ -57,8 +57,13 @@ export default function FehlingsTestPage() {
   const [message, setMessage] = useState('')
   const [observations, setObservations] = useState<Observation[]>([])
   useEffect(() => {
-    const saved = window.localStorage.getItem('labx-fehlings-observations')
-    if (saved) setObservations(JSON.parse(saved))
+    try {
+      const saved = window.localStorage.getItem('labx-fehlings-observations')
+      if (saved) {
+        const parsed: unknown = JSON.parse(saved)
+        if (Array.isArray(parsed)) setObservations(parsed.filter((observation): observation is Observation => typeof observation === 'object' && observation !== null && typeof (observation as Observation).sample === 'string' && typeof (observation as Observation).result === 'string'))
+      }
+    } catch { setObservations([]) }
   }, [])
   useEffect(() => {
     window.localStorage.setItem('labx-fehlings-observations', JSON.stringify(observations))

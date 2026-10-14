@@ -35,7 +35,7 @@ function getStatus(experiment: Experiment): Status {
   try {
     const value = window.localStorage.getItem(experiment.storageKey)
     if (!value) return 'Not Started'
-    const trials = JSON.parse(value)
+    const trials: unknown = JSON.parse(value)
     return Array.isArray(trials) && trials.length > 0 ? 'Completed' : 'In Progress'
   } catch { return 'Not Started' }
 }

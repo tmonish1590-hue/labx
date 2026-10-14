@@ -31,7 +31,15 @@ const answers = ['metre (m)', 'to reduce stopwatch reaction error', 'increasing 
 
 export default function SimplePendulumPage() {
   const [length, setLength] = useState(DEFAULT_LENGTH); const [angle, setAngle] = useState(12); const [running, setRunning] = useState(false); const [paused, setPaused] = useState(false); const [elapsed, setElapsed] = useState(0); const [count, setCount] = useState(0); const [trials, setTrials] = useState<Trial[]>([]); const [message, setMessage] = useState(''); const [selected, setSelected] = useState<Record<number, string>>({})
-  useEffect(() => { const saved = window.localStorage.getItem('labx-pendulum-trials'); if (saved) setTrials(JSON.parse(saved)) }, [])
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem('labx-pendulum-trials')
+      if (saved) {
+        const parsed: unknown = JSON.parse(saved)
+        if (Array.isArray(parsed)) setTrials(parsed.filter((trial): trial is Trial => typeof trial === 'object' && trial !== null && typeof (trial as Trial).length === 'number' && typeof (trial as Trial).time === 'number' && typeof (trial as Trial).oscillations === 'number' && typeof (trial as Trial).period === 'number' && typeof (trial as Trial).g === 'number'))
+      }
+    } catch { setTrials([]) }
+  }, [])
   useEffect(() => { window.localStorage.setItem('labx-pendulum-trials', JSON.stringify(trials)) }, [trials])
   const preview = useMemo(() => calculatePendulumReading(length), [length])
   useEffect(() => { if (!running || paused) return; const id = window.setInterval(() => { setElapsed((v) => { const next = Number((v + 0.1).toFixed(1)); setCount(Math.min(OSCILLATIONS, Math.floor(next / preview.period))); setAngle(Number((12 * Math.cos((2 * Math.PI * next) / preview.period)).toFixed(1))); return next }) }, 100); return () => window.clearInterval(id) }, [running, paused, preview.period])
