@@ -56,6 +56,13 @@ export default function FehlingsTestPage() {
   const [result, setResult] = useState<boolean | null>(null)
   const [message, setMessage] = useState('')
   const [observations, setObservations] = useState<Observation[]>([])
+  useEffect(() => {
+    const saved = window.localStorage.getItem('labx-fehlings-observations')
+    if (saved) setObservations(JSON.parse(saved))
+  }, [])
+  useEffect(() => {
+    window.localStorage.setItem('labx-fehlings-observations', JSON.stringify(observations))
+  }, [observations])
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [feedback, setFeedback] = useState<Record<number, boolean>>({})
   const ready = reagents.length === REAGENTS.length && mixed

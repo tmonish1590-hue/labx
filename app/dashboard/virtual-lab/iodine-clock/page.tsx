@@ -65,6 +65,13 @@ export default function IodineClockPage() {
   const [observation, setObservation] = useState('')
   const [message, setMessage] = useState('')
   const [trials, setTrials] = useState<Trial[]>([])
+  useEffect(() => {
+    const saved = window.localStorage.getItem('labx-iodine-trials')
+    if (saved) setTrials(JSON.parse(saved))
+  }, [])
+  useEffect(() => {
+    window.localStorage.setItem('labx-iodine-trials', JSON.stringify(trials))
+  }, [trials])
 
   const requiredReady = selected.length === REAGENTS.length
   const target = useMemo(() => simulateReactionTime(temperature), [temperature])
