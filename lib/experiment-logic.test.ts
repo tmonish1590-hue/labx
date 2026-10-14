@@ -17,6 +17,14 @@ describe('pendulum calculations', () => {
   })
 })
 
+describe('measurement validation', () => {
+  it('rejects non-finite or non-positive pendulum inputs', () => {
+    expect(() => calculatePendulumReading(Number.NaN)).toThrow(RangeError)
+    expect(() => calculatePendulumReading(0)).toThrow(RangeError)
+    expect(() => calculatePendulumReading(1, Infinity)).toThrow(RangeError)
+  })
+})
+
 describe("Ohm's Law and experiment state", () => {
   it('calculates current only for a complete positive resistive circuit', () => {
     expect(calculateCurrent(6, 100, closedCircuit)).toBe(0.06)

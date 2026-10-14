@@ -9,6 +9,14 @@ import {
   uniqueCompletedCount,
 } from './chemistry-logic'
 
+describe('chemistry input validation', () => {
+  it('rejects impossible reaction temperatures and samples', () => {
+    expect(() => simulateReactionTime(Number.NaN)).toThrow(RangeError)
+    expect(() => simulateReactionTime(41)).toThrow(RangeError)
+    expect(() => determineFehlingResult('invalid' as never, true, true)).toThrow(RangeError)
+  })
+})
+
 describe('chemistry simulations', () => {
   it('models a warmer iodine trial with a shorter endpoint time', () => {
     expect(simulateReactionTime(30)).toBeLessThan(simulateReactionTime(15))

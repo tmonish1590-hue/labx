@@ -3,6 +3,7 @@ export type PendulumReading = { time: number; period: number; g: number; oscilla
 export const OSCILLATIONS = 10
 
 export function calculatePendulumReading(length: number, oscillations = OSCILLATIONS): PendulumReading {
+  if (!Number.isFinite(length) || !Number.isFinite(oscillations) || length <= 0 || oscillations <= 0) throw new RangeError('Pendulum measurements must be finite and positive.')
   const period = 2 * Math.PI * Math.sqrt(length / 9.81)
   const time = Number((period * oscillations).toFixed(2))
   const measuredPeriod = Number((time / oscillations).toFixed(3))

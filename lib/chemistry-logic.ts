@@ -7,7 +7,8 @@ export type FehlingResult = {
 }
 
 export function determineFehlingResult(sample: FehlingSample, heated: boolean, reagentsReady: boolean): FehlingResult {
-  const positive = sample === 'glucose' && heated && reagentsReady
+  if (sample !== 'glucose' && sample !== 'water') throw new RangeError('Unsupported Fehling sample.')
+  const positive = sample === 'glucose' && heated === true && reagentsReady === true
   return {
     positive,
     label: positive ? 'Positive' : 'Negative',
@@ -18,6 +19,7 @@ export function determineFehlingResult(sample: FehlingSample, heated: boolean, r
 }
 
 export function simulateReactionTime(temperature: number): number {
+  if (!Number.isFinite(temperature) || temperature < 10 || temperature > 40) throw new RangeError('Reaction temperature must be between 10°C and 40°C.')
   const baseline = 18.4
   const temperatureEffect = Math.max(-4, Math.min(8, temperature - 22)) * 0.48
   const deterministicVariation = ((Math.round(temperature) * 7) % 5 - 2) * 0.18
