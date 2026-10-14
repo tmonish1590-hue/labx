@@ -167,9 +167,22 @@
   to { background-position: 32px 0; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  :focus-visible {
+    outline: 3px solid #4F827D;
+    outline-offset: 3px;
   }
   body {
     @apply bg-background text-foreground;

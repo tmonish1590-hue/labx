@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "lint": "eslint .",
+    "start": "next start",
+    "test": "pnpm test:run",
+    "test:run": "vitest run --config vitest.config.mts",
+    "test:unit": "vitest run --config vitest.config.mts",
+    "test:watch": "vitest --config vitest.config.mts",
+    "test:coverage": "vitest run --config vitest.config.mts --coverage"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -27,8 +33,12 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^5.0.4",
+    "eslint": "^10.12.0",
+    "eslint-config-next": "^16.4.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.3.3",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "vitest": "^5.0.4"
   }
 }

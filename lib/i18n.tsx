@@ -29,6 +29,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 }
 
 export function useLanguage() { return useContext(LanguageContext) }
+export function readStoredLanguage(value: string | null): Language { return value === 'te' || value === 'hi' ? value : 'en' }
+export function isSupportedLanguage(value: unknown): value is Language { return value === 'en' || value === 'te' || value === 'hi' }
 export type { TranslationKey }
 export const getTutorLanguageInstruction = (language: Language) => language === 'te' ? 'Respond only in Telugu (తెలుగు).' : language === 'hi' ? 'Respond only in Hindi (हिन्दी).' : 'Respond only in English.'
 export const dictionaryForTesting = dictionary
