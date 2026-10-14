@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import LabTutor from '@/components/lab-tutor'
+import { LanguageProvider } from '@/lib/i18n'
 
 export const metadata: Metadata = {
   title: 'Virtual Lab | LabX AI',
@@ -39,8 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
-        <LabTutor />
+        <LanguageProvider>
+          {children}
+          <LabTutor />
+        </LanguageProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
