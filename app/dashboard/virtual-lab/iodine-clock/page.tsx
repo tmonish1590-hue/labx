@@ -10,10 +10,8 @@ import {
   ChevronRight,
   Clock3,
   FlaskConical,
-  Minus,
   Pause,
   Play,
-  Plus,
   RotateCcw,
   Thermometer,
   TriangleAlert,
@@ -81,7 +79,6 @@ export default function IodineClockPage() {
 
   function mix() { if (!requiredReady) { setMessage('Select all three reagents before mixing.'); return }; setMessage(''); setMixing(true); window.setTimeout(() => { setMixing(false); setMixed(true) }, 900) }
   function startReaction() { if (!requiredReady) return setMessage('Select potassium iodide, hydrogen peroxide, and starch indicator first.'); if (!mixed) return setMessage('Mix the reagents before starting the stopwatch.'); if (!canStartIodineReaction(selected.length, mixed, temperature)) return setMessage('Set a temperature between 10°C and 40°C.'); setMessage(''); setEndpoint(false); setElapsed(0); setPaused(false); setRunning(true) }
-  function togglePause() { if (!running || endpoint) return; setPaused((value) => !value); setMessage('') }
   function reset() { setRunning(false); setPaused(false); setEndpoint(false); setElapsed(0); setMixed(false); setMixing(false); setMessage('') }
   function recordTrial() { if (!canRecordIodineTrial(endpoint)) return setMessage('The reading is premature. Wait until the liquid turns blue-black.'); setTrials((current) => [...current, { temperature, reactionTime: Number(elapsed.toFixed(1)) }]); setObservation('Blue-black endpoint observed; colour change was sudden.'); setMessage('Trial recorded. Adjust the temperature for another trial.'); reset() }
 
