@@ -67,8 +67,13 @@ export default function IodineClockPage() {
   const [message, setMessage] = useState('')
   const [trials, setTrials] = useState<Trial[]>([])
   useEffect(() => {
-    const saved = window.localStorage.getItem('labx-iodine-trials')
-    if (saved) setTrials(JSON.parse(saved))
+    try {
+      const saved = window.localStorage.getItem('labx-iodine-trials')
+      if (saved) {
+        const parsed: unknown = JSON.parse(saved)
+        if (Array.isArray(parsed)) setTrials(parsed.filter((trial): trial is Trial => typeof trial === 'object' && trial !== null && typeof (trial as Trial).temperature === 'number' && typeof (trial as Trial).reactionTime === 'number'))
+      }
+    } catch { setTrials([]) }
   }, [])
   useEffect(() => {
     window.localStorage.setItem('labx-iodine-trials', JSON.stringify(trials))
