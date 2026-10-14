@@ -24,10 +24,21 @@ export function LabTutor() {
   const [messages, setMessages] = useState<TutorMessage[]>([])
   const triggerRef = useRef<HTMLButtonElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+  const messageIdRef = useRef(1)
+  const previousContextRef = useRef<string | undefined>(undefined)
   const context = useMemo(() => Object.entries(contexts).find(([route]) => pathname.includes(route))?.[1], [pathname])
+
+  useEffect(() => {
+    const contextKey = context?.name
+    if (previousContextRef.current !== undefined && previousContextRef.current !== contextKey) setMessages([])
+    previousContextRef.current = contextKey
+  }, [context?.name])
   const suggestions = language === 'te' ? ['నా సెటప్‌లో ఏమి తనిఖీ చేయాలి?', 'సిద్ధాంతాన్ని సులభంగా వివరించగలరా?', 'నా రీడింగ్స్‌ను ఎలా అర్థం చేసుకోవాలి?'] : language === 'hi' ? ['सेटअप में क्या जांचूं?', 'सिद्धांत सरलता से समझाएं।', 'रीडिंग को कैसे समझूं?'] : ['What should I check in my setup?', 'Can you explain the theory simply?', 'How should I interpret my readings?']
 
-  function openTutor() { setOpen(true); if (messages.length === 0) setMessages([{ id: 1, role: 'assistant', text: context ? `${context.name}. ${context.prompt}` : t('tutorReady') }]) }
+  function openTutor() {
+    setOpen(true)
+    if (messages.length === 0) setMessages([{ id: messageIdRef.current++, role: 'assistant', text: context ? `${context.name}. ${context.prompt}` : t('tutorReady') }])
+  }
   useEffect(() => {
     if (!open) { triggerRef.current?.focus(); return }
     closeRef.current?.focus()
@@ -47,12 +58,12 @@ export function LabTutor() {
   }, [open])
   async function send(text = draft) {
     const value = text.trim(); if (!value || loading || value.length > 1200) return
-    setMessages((current) => [...current, { id: Date.now(), role: 'user', text: value }]); setDraft(''); setLoading(true)
+    setMessages((current) => [...current, { id: messageIdRef.current++, role: 'user', text: value }]); setDraft(''); setLoading(true)
     try {
       const response = await fetch('/api/tutor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: value, language, experiment: context?.name }) })
       const data = await response.json() as { answer?: string; error?: string }
-      setMessages((current) => [...current, { id: Date.now() + 1, role: 'assistant', text: data.answer ?? data.error ?? t('tutorUnavailable') }])
-    } catch { setMessages((current) => [...current, { id: Date.now() + 1, role: 'assistant', text: t('tutorUnavailable') }]) } finally { setLoading(false) }
+      setMessages((current) => [...current, { id: messageIdRef.current++, role: 'assistant', text: data.answer ?? data.error ?? t('tutorUnavailable') }])
+    } catch { setMessages((current) => [...current, { id: messageIdRef.current++, role: 'assistant', text: t('tutorUnavailable') }]) } finally { setLoading(false) }
   }
 
   return <>
