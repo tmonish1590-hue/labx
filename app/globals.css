@@ -153,6 +153,20 @@
   }
 }
 
+@keyframes swing {
+  0%, 100% { transform: translateX(-50%) rotate(-12deg); }
+  50% { transform: translateX(-50%) rotate(12deg); }
+}
+
+@keyframes precipitate-grow {
+  0% { transform: scaleY(0.15); opacity: 0.25; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes current-flow {
+  to { background-position: 32px 0; }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
