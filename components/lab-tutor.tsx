@@ -31,7 +31,17 @@ export function LabTutor() {
   useEffect(() => {
     if (!open) { triggerRef.current?.focus(); return }
     closeRef.current?.focus()
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false) }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault(); setOpen(false); return }
+      if (event.key !== 'Tab') return
+      const dialog = event.currentTarget as Document
+      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>('[role="dialog"] button, [role="dialog"] input')).filter((element) => !element.hasAttribute('disabled'))
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+    }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [open])
@@ -49,7 +59,7 @@ export function LabTutor() {
     <button ref={triggerRef} type="button" aria-label={t('tutor')} aria-haspopup="dialog" aria-expanded={open} onClick={openTutor} className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-[#4F827D] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[#263746]/20 transition hover:bg-[#263746] focus:outline-none focus:ring-2 focus:ring-[#4F827D] focus:ring-offset-2 sm:bottom-6 sm:right-6"><Sparkles className="size-4" />{t('tutor')}</button>
     {open && <section role="dialog" aria-modal="true" aria-label={t('tutor')} className="fixed inset-x-3 bottom-3 z-50 flex max-h-[min(680px,calc(100vh-1.5rem))] flex-col overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-2xl sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[390px]">
       <header className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F5F7FA] px-4 py-3"><div><h2 className="text-sm font-semibold text-[#263746]">{t('tutor')}</h2><p className="text-xs text-[#64748B]">{context ? `${context.subject} · ${context.name}` : t('labSupport')}</p></div><button ref={closeRef} type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="rounded-md p-1.5 text-[#64748B] hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#4F827D]"><X className="size-4" /></button></header>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4" aria-live="polite">{messages.map((message) => <div key={message.id} className={`max-w-[88%] rounded-xl px-3 py-2.5 text-sm leading-5 ${message.role === 'user' ? 'ml-auto bg-[#4F827D] text-white' : 'bg-[#F5F7FA] text-[#263746]'}`}>{message.text}</div>)}{loading && <div className="text-xs text-[#64748B]" role="status">{language === 'te' ? 'సమాధానం సిద్ధమవుతోంది...' : language === 'hi' ? 'उत्तर तैयार हो रहा है...' : t('tutorThinking')}</div>}<div className="flex flex-wrap gap-2">{suggestions.map((question) => <button key={question} type="button" disabled={loading} onClick={() => send(question)} className="rounded-full border border-[#DCE8E5] px-3 py-1.5 text-left text-xs text-[#4F827D] hover:bg-[#F0F6F5]">{question}</button>)}</div></div>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4" role="log" aria-live="polite" aria-relevant="additions" aria-busy={loading}>{messages.map((message) => <div key={message.id} className={`max-w-[88%] rounded-xl px-3 py-2.5 text-sm leading-5 ${message.role === 'user' ? 'ml-auto bg-[#4F827D] text-white' : 'bg-[#F5F7FA] text-[#263746]'}`}><span className="sr-only">{message.role === 'user' ? 'You: ' : 'Tutor: '}</span>{message.text}</div>)}{loading && <div className="text-xs text-[#64748B]" role="status">{language === 'te' ? 'సమాధానం సిద్ధమవుతోంది...' : language === 'hi' ? 'उत्तर तैयार हो रहा है...' : t('tutorThinking')}</div>}<div className="flex flex-wrap gap-2">{suggestions.map((question) => <button key={question} type="button" disabled={loading} onClick={() => send(question)} className="rounded-full border border-[#DCE8E5] px-3 py-1.5 text-left text-xs text-[#4F827D] hover:bg-[#F0F6F5]">{question}</button>)}</div></div>
       <form onSubmit={(event) => { event.preventDefault(); void send() }} className="flex gap-2 border-t border-[#E2E8F0] p-3"><input value={draft} maxLength={1200} onChange={(event) => setDraft(event.target.value)} aria-label={t('askTutor')} placeholder={t('askTutor')} className="min-w-0 flex-1 rounded-lg border border-[#CBD5E1] px-3 py-2.5 text-sm text-[#263746] outline-none placeholder:text-[#94A3B8] focus:border-[#4F827D]" /><button type="submit" disabled={!draft.trim() || loading} className="rounded-lg bg-[#4F827D] px-3 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">{t('send')}</button></form>
     </section>}
   </>
