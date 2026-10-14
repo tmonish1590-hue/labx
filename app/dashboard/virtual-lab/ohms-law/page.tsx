@@ -3,19 +3,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Battery, CheckCircle2, CircleHelp, Play, RotateCcw, Table2, Zap } from 'lucide-react'
+import { calculateCurrent, type CircuitState } from '@/lib/experiment-logic'
 
+export { calculateCurrent }
 type Trial = { voltage: number; resistance: number; current: number }
-type CircuitState = { source: boolean; resistor: boolean; ammeter: boolean; voltmeter: boolean; switch: boolean; wires: boolean }
 
 const DEFAULT_CIRCUIT: CircuitState = { source: true, resistor: true, ammeter: true, voltmeter: true, switch: false, wires: true }
 const DEFAULT_VOLTAGE = 6
 const DEFAULT_RESISTANCE = 100
-
-/** Pure educational model: a valid closed resistive circuit follows I = V/R. */
-export function calculateCurrent(voltage: number, resistance: number, circuit: CircuitState) {
-  const valid = circuit.source && circuit.resistor && circuit.ammeter && circuit.voltmeter && circuit.switch && circuit.wires && voltage > 0 && resistance > 0
-  return valid ? Number((voltage / resistance).toFixed(3)) : 0
-}
 
 function CircuitDiagram({ circuit, current }: { circuit: CircuitState; current: number }) {
   const active = current > 0

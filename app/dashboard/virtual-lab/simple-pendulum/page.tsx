@@ -3,20 +3,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Beaker, CheckCircle2, Clock3, Pause, Play, RotateCcw, Ruler, Table2, TriangleAlert } from 'lucide-react'
+import { calculatePendulumReading, OSCILLATIONS } from '@/lib/experiment-logic'
 
+export { calculatePendulumReading }
 type Trial = { length: number; time: number; oscillations: number; period: number; g: number }
 
 const DEFAULT_LENGTH = 0.60
-const OSCILLATIONS = 10
-
-/** Deterministic educational model: T = 2π√(L/g), with g fixed at 9.81 m/s² and a small reading bias. */
-export function calculatePendulumReading(length: number, oscillations = OSCILLATIONS) {
-  const period = 2 * Math.PI * Math.sqrt(length / 9.81)
-  const time = Number((period * oscillations).toFixed(2))
-  const measuredPeriod = Number((time / oscillations).toFixed(3))
-  const g = Number((4 * Math.PI ** 2 * length / measuredPeriod ** 2).toFixed(2))
-  return { time, period: measuredPeriod, g, oscillations }
-}
 
 function Apparatus({ length, angle, running, paused }: { length: number; angle: number; running: boolean; paused: boolean }) {
   const swing = running && !paused ? 'animate-[swing_1.8s_ease-in-out_infinite]' : ''
